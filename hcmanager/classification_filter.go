@@ -96,21 +96,27 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 	}
 
 	if (expectedCPU.MaximumSpeedMHz > 0) && (expectedCPU.MinimumSpeedMHz > 0) {
-		mgr.Log.Info("", "Provided Minimum ClockSpeed for CPU", expectedCPU.MinimumSpeedMHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
-		mgr.Log.Info("", "Provided Maximum ClockSpeed for CPU", expectedCPU.MaximumSpeedMHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
-		if (bmh.ClockSpeed(expectedCPU.MinimumSpeedMHz) > cpu.ClockMegahertz) || (bmh.ClockSpeed(expectedCPU.MaximumSpeedMHz) < cpu.ClockMegahertz) {
+
+		MinSpeed := bmh.ClockSpeed(expectedCPU.MinimumSpeedMHz)
+		MaxSpeed := bmh.ClockSpeed(expectedCPU.MaximumSpeedMHz)
+
+		mgr.Log.Info("", "Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		mgr.Log.Info("", "Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		if (MinSpeed > cpu.ClockMegahertz) || (MaxSpeed < cpu.ClockMegahertz) {
 			mgr.Log.Info("CPU MINMAX ClockSpeed did not match")
 			return false
 		}
 	} else if expectedCPU.MaximumSpeedMHz > 0 {
-		mgr.Log.Info("", "Provided Maximum ClockSpeed for CPU", expectedCPU.MaximumSpeedMHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
-		if bmh.ClockSpeed(expectedCPU.MaximumSpeedMHz) < cpu.ClockMegahertz {
+		MaxSpeed := bmh.ClockSpeed(float64(expectedCPU.MaximumSpeedMHz / 1000))
+		mgr.Log.Info("", "Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		if MaxSpeed < cpu.ClockMegahertz {
 			mgr.Log.Info("CPU MAX ClockSpeed did not match")
 			return false
 		}
 	} else if expectedCPU.MinimumSpeedMHz > 0 {
-		mgr.Log.Info("", "Provided Minimum ClockSpeed for CPU", expectedCPU.MinimumSpeedMHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
-		if bmh.ClockSpeed(expectedCPU.MinimumSpeedMHz) > cpu.ClockMegahertz {
+		MinSpeed := bmh.ClockSpeed(float64(expectedCPU.MinimumSpeedMHz / 1000))
+		mgr.Log.Info("", "Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		if MinSpeed > cpu.ClockMegahertz {
 			mgr.Log.Info("CPU MIN ClockSpeed did not match")
 			return false
 		}

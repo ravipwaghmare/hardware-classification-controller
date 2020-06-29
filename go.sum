@@ -594,6 +594,7 @@ github.com/metal3-io/baremetal-operator v0.0.0-20200221162300-f1e463d45c7d h1:30
 github.com/metal3-io/baremetal-operator v0.0.0-20200221162300-f1e463d45c7d/go.mod h1:o9ta8R2EEtSiQY53sXdoM50v5531G0oS+lC58Gcm+1Y=
 github.com/metal3-io/baremetal-operator v0.0.0-20200528055924-2fe2e5225ef1 h1:CcvImy4VHqU4m2zorLBuSZUql8jir743Bw1cP6A1548=
 github.com/metal3-io/baremetal-operator v0.0.0-20200528055924-2fe2e5225ef1/go.mod h1:cJHbFsmTz+rAFC77BRm+I213ilcJUYSzaLIUV35BRHQ=
+github.com/metal3-io/baremetal-operator v0.0.0-20200626163822-07eac71fa1ce h1:+Jg9ahfxN5Lc1onJAOG8tJhri4AG1bSN7N2SwRLoBUI=
 github.com/mholt/certmagic v0.6.2-0.20190624175158-6a42ef9fe8c2/go.mod h1:g4cOPxcjV0oFq3qwpjSA30LReKD8AoIfwAY9VvG35NY=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.3/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
