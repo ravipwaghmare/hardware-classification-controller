@@ -39,15 +39,18 @@ func (mgr HardwareClassificationManager) DeleteLabels(ctx context.Context, hcMet
 	labelKey := LabelName + hcMetaData.Name
 	// Delete existing labels for the same profile.
 	existingLabels := host.GetLabels()
-	for key := range existingLabels {
-		if key == labelKey {
-			delete(existingLabels, key)
+	if existingLabels != nil {
+		for key := range existingLabels {
+			if key == labelKey {
+				delete(existingLabels, key)
+			}
 		}
-	}
-	host.SetLabels(existingLabels)
-	err := mgr.client.Update(ctx, &host)
-	if err != nil {
-		return errors.New("Label Delete Failed" + host.Name)
+		host.SetLabels(existingLabels)
+		err := mgr.client.Update(ctx, &host)
+		if err != nil {
+			mgr.Log.Error(err, "Delete label error******************************")
+			return errors.New("Label Delete Failed" + host.Name)
+		}
 	}
 	return nil
 }
@@ -57,34 +60,43 @@ func (mgr HardwareClassificationManager) SetLabel(ctx context.Context, hcMetaDat
 	labelKey := LabelName + hcMetaData.Name
 	var setLabelError []string
 
-	for _, hostName := range validHosts {
-		for _, host := range BMHList.Items {
-			if hostName == host.Name {
-				// Extract existing labels of host
-				labels := host.GetLabels()
-				if hcMetaData.Labels != nil {
-					for _, value := range hcMetaData.Labels {
-						if value == "" {
-							labels[labelKey] = DefaultLabel
-						} else {
-							labels[labelKey] = value
-						}
+	for _, host := range BMHList.Items {
+		if returnHostName(host.Name, validHosts) {
+			labels := host.GetLabels()
+			if labels == nil {
+				labels = make(map[string]string)
+			}
+			if hcMetaData.Labels != nil {
+				for _, value := range hcMetaData.Labels {
+					if value == "" {
+						labels[labelKey] = DefaultLabel
+					} else {
+						labels[labelKey] = value
 					}
-				} else {
-					labels[labelKey] = DefaultLabel
-				}
-				mgr.Log.Info("Set Label", hostName, labels)
-				// set updated labels to host
-				host.SetLabels(labels)
-				if err := mgr.client.Update(ctx, &host); err != nil {
-					setLabelError = append(setLabelError, hostName+" "+err.Error())
 				}
 			} else {
-				if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
-					setLabelError = append(setLabelError, hostName+" "+err.Error())
-				}
+				labels[labelKey] = DefaultLabel
+			}
+			mgr.Log.Info("Set Label", host.Name, labels)
+			// set updated labels to host
+			host.SetLabels(labels)
+			if err := mgr.client.Update(ctx, &host); err != nil {
+				setLabelError = append(setLabelError, host.Name+" "+err.Error())
 			}
 		}
-	}
+	} /* else {
+		if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
+			setLabelError = append(setLabelError, hostName+" "+err.Error())
+		}
+	}*/
 	return setLabelError
+}
+
+func returnHostName(hostName string, validHosts []string) bool {
+	for _, host := range validHosts {
+		if hostName == host {
+			return true
+		}
+	}
+	return false
 }

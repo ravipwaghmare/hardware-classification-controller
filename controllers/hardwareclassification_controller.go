@@ -111,7 +111,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 
 	if len(validHost) == 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched, hwcc.Empty, hwcc.NoValidHostFound)
-		hcReconciler.Log.Info("Updated profile match status", hardwareClassification.Status.ProfileMatchStatus, hwcc.ProfileMatchStatusUnMatched)
+		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
 		deleteLabelError := hcManager.DeleteHWCCLabel(ctx, hardwareClassification.ObjectMeta, bmhList)
 		if len(deleteLabelError) > 0 {
 			hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(deleteLabelError, ","))
@@ -120,13 +120,14 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	//Update BMHost Labels
+	validHost = append(validHost, validHost...)
 	setLabelError := hcManager.SetLabel(ctx, hardwareClassification.ObjectMeta, validHost, bmhList)
 	if len(setLabelError) > 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(setLabelError, ","))
 	} else {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched, hwcc.Empty, hwcc.NOError)
 		hcReconciler.Log.Info(hwcc.LabelUpdated)
-		hcReconciler.Log.Info("Updated profile match status", hardwareClassification.Status.ProfileMatchStatus, hwcc.ProfileMatchStatusMatched)
+		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
 	}
 	return ctrl.Result{}, nil
 }
