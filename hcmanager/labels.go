@@ -48,7 +48,6 @@ func (mgr HardwareClassificationManager) DeleteLabels(ctx context.Context, hcMet
 		host.SetLabels(existingLabels)
 		err := mgr.client.Update(ctx, &host)
 		if err != nil {
-			mgr.Log.Error(err, "Delete label error******************************")
 			return errors.New("Label Delete Failed" + host.Name)
 		}
 	}
@@ -61,7 +60,7 @@ func (mgr HardwareClassificationManager) SetLabel(ctx context.Context, hcMetaDat
 	var setLabelError []string
 
 	for _, host := range BMHList.Items {
-		if returnHostName(host.Name, validHosts) {
+		if getHostName(host.Name, validHosts) {
 			labels := host.GetLabels()
 			if labels == nil {
 				labels = make(map[string]string)
@@ -83,16 +82,16 @@ func (mgr HardwareClassificationManager) SetLabel(ctx context.Context, hcMetaDat
 			if err := mgr.client.Update(ctx, &host); err != nil {
 				setLabelError = append(setLabelError, host.Name+" "+err.Error())
 			}
+		} else {
+			if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
+				setLabelError = append(setLabelError, host.Name+" "+err.Error())
+			}
 		}
-	} /* else {
-		if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
-			setLabelError = append(setLabelError, hostName+" "+err.Error())
-		}
-	}*/
+	}
 	return setLabelError
 }
 
-func returnHostName(hostName string, validHosts []string) bool {
+func getHostName(hostName string, validHosts []string) bool {
 	for _, host := range validHosts {
 		if hostName == host {
 			return true
