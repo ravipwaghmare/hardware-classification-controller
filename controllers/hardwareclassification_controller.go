@@ -45,10 +45,13 @@ type HardwareClassificationReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications/status,verbs=get;update;patch
 // Add RBAC rules to access baremetalhost resources
-// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
+// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;watch;update
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
 func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
 	ctx := context.Background()
+
+	// Initialize the logger with namespace
+	hcReconciler.Log = hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
 
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassification{}
@@ -106,10 +109,10 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
 
 	//Compare the host list with extracted profile and fetch the valid host names
-	validHost := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
-	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHost", validHost)
+	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
 
-	if len(validHost) == 0 {
+	if len(validHosts) == 0 {
 		hcReconciler.Log.Info(hwcc.NoValidHostFound)
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched, hwcc.Empty, hwcc.NOError)
 		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
@@ -121,7 +124,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	//Update BMHost Labels
-	setLabelError := hcManager.SetLabel(ctx, hardwareClassification.ObjectMeta, validHost, bmhList)
+	setLabelError := hcManager.SetLabel(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
 	if len(setLabelError) > 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(setLabelError, ","))
 	} else {
