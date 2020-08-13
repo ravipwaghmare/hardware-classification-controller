@@ -25,6 +25,7 @@ import (
 
 	"github.com/metal3-io/hardware-classification-controller/controllers"
 
+	metal3v1alpha1 "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -43,6 +44,7 @@ func init() {
 
 	_ = metal3iov1alpha1.AddToScheme(scheme)
 	_ = bmoapis.AddToScheme(scheme)
+	_ = metal3v1alpha1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -81,6 +83,10 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "HardwareClassification")
+		os.Exit(1)
+	}
+	if err = (&metal3v1alpha1.HardwareClassification{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "HardwareClassification")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
