@@ -8,6 +8,7 @@ metadata:
 spec:
   hardwareCharacteristics:
       cpu:
+         architecture : "x86-64"
          minimumCount: 48
          maximumCount: 72
          minimumSpeedMHz: 2600
@@ -21,5 +22,16 @@ spec:
          minimumSizeGB: 6
          maximumSizeGB: 180
       nic:
+         vendor: "Intel"
          minimumCount: 1
          maximumCount: 7
+      firmware:
+         bios:
+            vendor: "Dell Inc."
+            version: "1.5.6"
+      systemVendor:
+         manufacturer: "Dell Inc."
+         productName: "PowerEdge R640"
+
+
+
