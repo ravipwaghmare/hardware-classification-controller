@@ -9,17 +9,17 @@ spec:
   hardwareCharacteristics:
       cpu:
          architecture : "x86-64"
-         minimumCount: 48
+         minimumCount: 2
          maximumCount: 72
-         minimumSpeedMHz: 2600
+         minimumSpeedMHz: 1000
          maximumSpeedMHz: 3600
       disk:
          minimumCount: 1
          maximumCount: 8
-         minimumIndividualSizeGB: 200
+         minimumIndividualSizeGB: 10
          maximumIndividualSizeGB: 3000
       ram:
-         minimumSizeGB: 6
+         minimumSizeGB: 1
          maximumSizeGB: 180
       nic:
          vendor: "Intel"
