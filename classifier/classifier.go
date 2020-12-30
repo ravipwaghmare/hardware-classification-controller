@@ -1,6 +1,7 @@
 package classifier
 
 import (
+	"fmt"
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 
@@ -10,6 +11,9 @@ import (
 var log = ctrl.Log.WithName("classifier")
 
 func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
+
+	fmt.Println("Profile Details", profile)
+
 	if !checkCPU(profile, host) {
 		return false
 	}

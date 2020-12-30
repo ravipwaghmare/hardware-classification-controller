@@ -48,6 +48,38 @@ type HardwareCharacteristics struct {
 	Nic *Nic `json:"nic,omitempty"`
 	// +optional
 	Ram *Ram `json:"ram,omitempty"`
+	// +optional
+	Firmware *Firmware `json:"firmware,omitempty"`
+	// +optional
+	SystemVendor *SystemVendor `json:"systemVendor,omitempty"`
+}
+
+type DiskSelector struct {
+	// +optional
+	HCTL string `json:"hctl,omitempty"`
+	// +optional
+	Rotational bool `json:"rotational,omitempty"`
+}
+
+// Firmware contains firmware details extracted from the hardware profile
+type Firmware struct {
+	BIOS BIOS `json:"bios,omitempty"`
+}
+
+// BIOS contains bios details extracted from the hardware profile
+type BIOS struct {
+	// +optional
+	Vendor string `json:"vendor,omitempty"`
+	// +optional
+	Version string `json:"version,omitempty"`
+}
+
+// SystemVendor contains system vendor details extracted from the hardware profile
+type SystemVendor struct {
+	// +optional
+	Manufacturer string `json:"manufacturer,omitempty"`
+	// +optional
+	ProductName string `json:"productName,omitempty"`
 }
 
 // Cpu contains cpu details extracted from the hardware profile
@@ -100,6 +132,8 @@ type Disk struct {
 	// Maximum individual size should be greater than 0 and greater than MinimumIndividualSizeGB
 	// Ex. MaximumIndividualSizeGB > 0 && MaximumIndividualSizeGB > MinimumIndividualSizeGB
 	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB,omitempty"`
+	// +optional
+	DiskSelector []DiskSelector `json:"diskSelector,omitempty"`
 }
 
 // Nic contains nic details extracted from the hardware profile

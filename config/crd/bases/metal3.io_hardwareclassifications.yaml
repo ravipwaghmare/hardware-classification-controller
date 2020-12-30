@@ -72,6 +72,15 @@ spec:
                 disk:
                   description: Disk contains disk details extracted from the hardware profile
                   properties:
+                    diskSelector:
+                      items:
+                        properties:
+                          hctl:
+                            type: string
+                          rotational:
+                            type: boolean
+                        type: object
+                      type: array
                     maximumCount:
                       description: MaximumCount of disk should be greater than 0 and greater than MinimumCount Ex. MaximumCount > 0 && MaximumCount > MinimumCount
                       minimum: 1
@@ -90,6 +99,18 @@ spec:
                       format: int64
                       minimum: 1
                       type: integer
+                  type: object
+                firmware:
+                  description: Firmware contains firmware details extracted from the hardware profile
+                  properties:
+                    bios:
+                      description: BIOS contains bios details extracted from the hardware profile
+                      properties:
+                        vendor:
+                          type: string
+                        version:
+                          type: string
+                      type: object
                   type: object
                 nic:
                   description: Nic contains nic details extracted from the hardware profile
@@ -114,6 +135,14 @@ spec:
                       description: MinimumSizeGB of Ram should be greater than 0 Ex. MinimumSizeGB > 0
                       minimum: 1
                       type: integer
+                  type: object
+                systemVendor:
+                  description: SystemVendor contains system vendor details extracted from the hardware profile
+                  properties:
+                    manufacturer:
+                      type: string
+                    productName:
+                      type: string
                   type: object
               type: object
           type: object
