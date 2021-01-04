@@ -93,7 +93,7 @@ func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) []bmh.Storage {
 		for _, disk := range disks {
 			replacedString := replaceCharacters(disk.HCTL)
 
-			if pattern.HCTL == disk.HCTL {
+			if pattern.HCTL == disk.HCTL && pattern.Rotational == disk.Rotational {
 				diskNew = append(diskNew, disk)
 			} else if pattern.HCTL == replacedString && pattern.Rotational == disk.Rotational {
 				diskNew = append(diskNew, disk)
