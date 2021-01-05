@@ -22,6 +22,15 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 		fmt.Println("*************************AFTER", filteredDisk)
 		if len(filteredDisk) > 0 {
 			newDisk = filteredDisk
+		} else {
+			log.Info("DiskCount",
+				"host", host.Name,
+				"profile", profile.Name,
+				"namespace", host.Namespace,
+				"diskCount", len(newDisk),
+				"ok", false,
+			)
+			return false
 		}
 	}
 
