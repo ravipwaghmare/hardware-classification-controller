@@ -18,19 +18,19 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 	newDisk := host.Status.HardwareDetails.Storage
 	if diskDetails.DiskSelector != nil {
 		fmt.Println("*************************BEFORE", diskDetails.DiskSelector, host.Status.HardwareDetails.Storage)
-		filteredDisk := checkDisk(diskDetails.DiskSelector, host.Status.HardwareDetails.Storage)
+		filteredDisk, matched := checkDisk(diskDetails.DiskSelector, host.Status.HardwareDetails.Storage)
 		fmt.Println("*************************AFTER", filteredDisk)
-		if len(filteredDisk) > 0 {
-			newDisk = filteredDisk
-		} else {
-			log.Info("DiskCount",
+
+		if !matched {
+			log.Info("Disk Pattern",
 				"host", host.Name,
 				"profile", profile.Name,
 				"namespace", host.Namespace,
-				"diskCount", len(newDisk),
 				"ok", false,
 			)
 			return false
+		} else if len(filteredDisk) > 0 {
+			newDisk = filteredDisk
 		}
 	}
 
@@ -39,7 +39,7 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 		diskDetails.MaximumCount,
 		len(newDisk),
 	)
-	log.Info("DiskCount",
+	log.Info("Disk Pattern",
 		"host", host.Name,
 		"profile", profile.Name,
 		"namespace", host.Namespace,
@@ -95,22 +95,33 @@ func checkRangeCapacity(min, max, count bmh.Capacity) bool {
 	return true
 }
 
-func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) []bmh.Storage {
+func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage, bool) {
 	var diskNew []bmh.Storage
 
 	for _, pattern := range pattern {
+		matched := false
 		for _, disk := range disks {
 			replacedString := replaceCharacters(disk.HCTL)
-
 			if pattern.HCTL == disk.HCTL && pattern.Rotational == disk.Rotational {
+				matched = true
 				diskNew = append(diskNew, disk)
 			} else if pattern.HCTL == replacedString && pattern.Rotational == disk.Rotational {
+				matched = true
 				diskNew = append(diskNew, disk)
 			}
 		}
+
+		if !matched {
+			log.Info("Disk Pattern",
+				"pattern", pattern,
+				"ok", false,
+			)
+
+			return diskNew, false
+		}
 	}
 
-	return diskNew
+	return diskNew, true
 }
 
 func replaceCharacters(hctl string) string {
