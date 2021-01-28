@@ -1,7 +1,9 @@
 package classifier
 
 import (
+	"fmt"
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
+	"regexp"
 
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 )
