@@ -136,6 +136,12 @@ type Disk struct {
 	DiskSelector []DiskSelector `json:"diskSelector,omitempty"`
 }
 
+// NicSelector contains vendor details for NIC hardware
+type NicSelector struct {
+	//optional
+	Vendor []string `json:"vendor,omitempty"`
+}
+
 // Nic contains nic details extracted from the hardware profile
 type Nic struct {
 	// +optional
@@ -148,6 +154,8 @@ type Nic struct {
 	// Maximum count should be greater than 0 and greater than MinimumCount
 	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
 	MaximumCount int `json:"maximumCount,omitempty"`
+	// +optional
+	NicSelector *NicSelector `json:"nicSelector,omitempty"`
 }
 
 // Ram contains ram details extracted from the hardware profile
