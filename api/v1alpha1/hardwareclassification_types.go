@@ -145,6 +145,8 @@ type NicSelector struct {
 // Nic contains nic details extracted from the hardware profile
 type Nic struct {
 	// +optional
+	NicSelector NicSelector `json:"nicSelector,omitempty"`
+	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// Minimum count should be greater than 0
 	// Ex. MinimumCount > 0
@@ -154,8 +156,6 @@ type Nic struct {
 	// Maximum count should be greater than 0 and greater than MinimumCount
 	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
 	MaximumCount int `json:"maximumCount,omitempty"`
-	// +optional
-	NicSelector *NicSelector `json:"nicSelector,omitempty"`
 }
 
 // Ram contains ram details extracted from the hardware profile

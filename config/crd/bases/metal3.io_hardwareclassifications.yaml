@@ -123,6 +123,15 @@ spec:
                       description: Minimum count should be greater than 0 Ex. MinimumCount > 0
                       minimum: 1
                       type: integer
+                    nicSelector:
+                      description: NicSelector contains vendor details for NIC hardware
+                      properties:
+                        vendor:
+                          description: optional
+                          items:
+                            type: string
+                          type: array
+                      type: object
                   type: object
                 ram:
                   description: Ram contains ram details extracted from the hardware profile
