@@ -1,7 +1,6 @@
 package classifier
 
 import (
-	"fmt"
 	"regexp"
 
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
@@ -17,9 +16,8 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 
 	newDisk := host.Status.HardwareDetails.Storage
 	if diskDetails.DiskSelector != nil {
-		fmt.Println("*************************BEFORE", diskDetails.DiskSelector, host.Status.HardwareDetails.Storage)
+
 		filteredDisk, matched := checkDisk(diskDetails.DiskSelector, host.Status.HardwareDetails.Storage)
-		fmt.Println("*************************AFTER", filteredDisk)
 
 		if !matched {
 			log.Info("Disk Pattern",
