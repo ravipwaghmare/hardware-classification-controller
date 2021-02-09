@@ -1,7 +1,8 @@
 package classifier
 
 import (
-	"regexp"
+	"strconv"
+	"strings"
 
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 
@@ -100,15 +101,16 @@ func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage,
 		matched := false
 		for _, disk := range disks {
 			replacedString := replaceCharacters(disk.HCTL)
-			if pattern.HCTL == disk.HCTL && pattern.Rotational == disk.Rotational {
+			if pattern.HCTL == replacedString && pattern.Rotational == disk.Rotational {
 				matched = true
 				diskNew = append(diskNew, disk)
-			} else if pattern.HCTL == replacedString && pattern.Rotational == disk.Rotational {
-				matched = true
-				diskNew = append(diskNew, disk)
+				log.Info("***DISK MATCHED", "pattern hctl", pattern.HCTL, "disk pattern", disk.HCTL, "pattern rotational", pattern.Rotational, "disk rotational", disk.Rotational)
+			} else {
+				log.Info("***DISK UNMATCHED", "pattern", pattern.HCTL, "disk pattern", disk.HCTL, "pattern rotational", pattern.Rotational, "disk rotational", disk.Rotational)
 			}
 		}
 
+		log.Info("****Match Boolean", "Match", matched)
 		if !matched {
 			log.Info("Disk Pattern",
 				"pattern", pattern,
@@ -122,16 +124,19 @@ func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage,
 	return diskNew, true
 }
 
-func replaceCharacters(hctl string) string {
-	r, _ := regexp.Compile("^[1-9]*$")
-	newStr := make([]rune, len(hctl))
-	for i, h1 := range hctl {
+func replaceCharacters(HCTL string) string {
 
-		if r.MatchString(string(h1)) {
-			newStr[i] = 'N'
-		} else {
-			newStr[i] = h1
+	if HCTL == "0:0:0:0" {
+		return "0:0:N:0"
+
+	} else {
+		res1 := strings.Split(HCTL, ":")
+		for index, st := range res1 {
+			value, _ := strconv.Atoi(st)
+			if value > 0 {
+				res1[index] = "N"
+			}
 		}
+		return strings.Join(res1, ":")
 	}
-	return string(newStr)
 }
